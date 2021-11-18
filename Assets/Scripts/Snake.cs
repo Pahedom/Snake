@@ -15,6 +15,8 @@ public class Snake : MonoBehaviour
 
     private Vector2 direction;
 
+    private Vector2 newDirection;
+
     [System.NonSerialized] public List<RectTransform> bodyPieces = new List<RectTransform>();
 
     private Vector2 lastPosition;
@@ -45,6 +47,8 @@ public class Snake : MonoBehaviour
         length = 1;
 
         direction = Vector2.up;
+
+        newDirection = Vector2.up;
     }
 
     void Update()
@@ -63,6 +67,8 @@ public class Snake : MonoBehaviour
 
     void Move()
     {
+        direction = UpdatedDirection();
+
         lastPosition = bodyPieces[length - 1].anchoredPosition;
 
         for (int i = length - 1; i > 0; i--)
@@ -86,22 +92,44 @@ public class Snake : MonoBehaviour
 
     void GetDirection()
     {
-        if (Input.GetKeyDown(KeyCode.W) && direction != Vector2.down)
+        if (Input.GetKeyDown(KeyCode.W))
         {
-            direction = Vector2.up;
+            newDirection = Vector2.up;
         }
-        else if (Input.GetKeyDown(KeyCode.A) && direction != Vector2.right)
+        else if (Input.GetKeyDown(KeyCode.A))
         {
-            direction = Vector2.left;
+            newDirection = Vector2.left;
         }
-        else if (Input.GetKeyDown(KeyCode.S) && direction != Vector2.up)
+        else if (Input.GetKeyDown(KeyCode.S))
         {
-            direction = Vector2.down;
+            newDirection = Vector2.down;
         }
-        else if (Input.GetKeyDown(KeyCode.D) && direction != Vector2.left)
+        else if (Input.GetKeyDown(KeyCode.D))
         {
-            direction = Vector2.right;
+            newDirection = Vector2.right;
         }
+    }
+
+    Vector2 UpdatedDirection()
+    {
+        if (direction == Vector2.up && newDirection == Vector2.down)
+        {
+            return direction;
+        }
+        else if (direction == Vector2.left && newDirection == Vector2.right)
+        {
+            return direction;
+        }
+        else if (direction == Vector2.down && newDirection == Vector2.up)
+        {
+            return direction;
+        }
+        else if (direction == Vector2.right && newDirection == Vector2.left)
+        {
+            return direction;
+        }
+
+        return newDirection;
     }
 
     public void IncreaseLength()
