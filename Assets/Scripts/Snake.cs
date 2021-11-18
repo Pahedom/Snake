@@ -76,8 +76,6 @@ public class Snake : MonoBehaviour
         {
             OnDie?.Invoke();
 
-            Time.timeScale = 0;
-
             return;
         }
 

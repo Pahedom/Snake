@@ -12,18 +12,21 @@ public class UI : MonoBehaviour
 
     [SerializeField] private GameObject gameOverScreen;
 
+    [SerializeField] private Text finalScoreText;
+
     private int score = 1;
 
     void Start()
     {
         appleSpawner.OnEatApple += UpdateScore;
 
-        scoreText.text = score.ToString();
-    }
+        snake.OnDie += GameOver;
 
-    void Update()
-    {
-        
+        scoreText.text = score.ToString();
+
+        Time.timeScale = 1;
+
+        gameOverScreen.SetActive(false);
     }
 
     void UpdateScore()
@@ -36,5 +39,14 @@ public class UI : MonoBehaviour
     public void Restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    void GameOver()
+    {
+        Time.timeScale = 0;
+
+        gameOverScreen.SetActive(true);
+
+        finalScoreText.text = score.ToString();
     }
 }
