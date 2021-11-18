@@ -92,21 +92,11 @@ public class Snake : MonoBehaviour
 
     void GetDirection()
     {
-        if (Input.GetKeyDown(KeyCode.W))
+        Vector2 axis = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
+        if ((axis.x == 0f || axis.y == 0f) && axis != Vector2.zero)
         {
-            newDirection = Vector2.up;
-        }
-        else if (Input.GetKeyDown(KeyCode.A))
-        {
-            newDirection = Vector2.left;
-        }
-        else if (Input.GetKeyDown(KeyCode.S))
-        {
-            newDirection = Vector2.down;
-        }
-        else if (Input.GetKeyDown(KeyCode.D))
-        {
-            newDirection = Vector2.right;
+            newDirection = axis;
         }
     }
 
