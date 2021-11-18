@@ -12,8 +12,6 @@ public class UI : MonoBehaviour
 
     [SerializeField] private GameObject gameOverScreen;
 
-    [SerializeField] private Text finalScoreText;
-
     private int score = 1;
 
     void Start()
@@ -46,7 +44,5 @@ public class UI : MonoBehaviour
         Time.timeScale = 0;
 
         gameOverScreen.SetActive(true);
-
-        finalScoreText.text = score.ToString();
     }
 }
