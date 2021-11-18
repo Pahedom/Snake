@@ -4,6 +4,8 @@ using UnityEngine.Events;
 
 public class Snake : MonoBehaviour
 {
+    [SerializeField] private Field field;
+
     [SerializeField] private RectTransform head;
 
     [Min(0)]
@@ -23,21 +25,13 @@ public class Snake : MonoBehaviour
 
     private float timer;
 
-    private Field field;
-
     public UnityAction<Vector2> OnMove;
 
     public UnityAction OnDie;
 
     private void OnValidate()
     {
-        head = GetComponentsInChildren<RectTransform>()[1];
-
         timeBetweenMoves = 1f / speed;
-
-        field = FindObjectOfType<Field>();
-
-        lastPosition = head.anchoredPosition + Vector2.down * field.tileSize;
     }
 
     void Start()
@@ -49,6 +43,8 @@ public class Snake : MonoBehaviour
         direction = Vector2.up;
 
         newDirection = Vector2.up;
+
+        lastPosition = head.anchoredPosition + Vector2.down * field.tileSize;
     }
 
     void Update()
