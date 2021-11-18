@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class AppleSpawner : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class AppleSpawner : MonoBehaviour
     [SerializeField] private int apples;
 
     private List<RectTransform> activeApples = new List<RectTransform>();
+
+    public UnityAction OnEatApple;
 
     void Start()
     {
@@ -61,6 +64,8 @@ public class AppleSpawner : MonoBehaviour
         snake.IncreaseLength();
 
         Spawn();
+
+        OnEatApple?.Invoke();
     }
 
     RectTransform FindApple(Vector2 position)
