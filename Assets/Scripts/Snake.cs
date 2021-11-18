@@ -15,7 +15,7 @@ public class Snake : MonoBehaviour
 
     private Vector2 direction;
 
-    [HideInInspector] public List<RectTransform> bodyPieces = new List<RectTransform>();
+    [System.NonSerialized] public List<RectTransform> bodyPieces = new List<RectTransform>();
 
     private Vector2 lastPosition;
 
@@ -72,9 +72,11 @@ public class Snake : MonoBehaviour
 
         Vector2 newPosition = head.anchoredPosition + direction * field.tileSize;
 
-        if (CheckForBodyPiece(newPosition))
+        if (CheckForBodyPiece(newPosition) || CheckForEdge(newPosition))
         {
             OnDie?.Invoke();
+
+            Time.timeScale = 0;
 
             return;
         }
@@ -125,6 +127,21 @@ public class Snake : MonoBehaviour
             {
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    public bool CheckForEdge(Vector2 position)
+    {
+        if (position.x < 0 || position.x >= field.size.x * field.tileSize)
+        {
+            return true;
+        }
+
+        if (position.y < 0 || position.y >= field.size.y * field.tileSize)
+        {
+            return true;
         }
 
         return false;
