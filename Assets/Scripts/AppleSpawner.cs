@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 public class AppleSpawner : MonoBehaviour
 {
-    [SerializeField] private RectTransform apple;
+    [SerializeField] private RectTransform applePrefab;
 
     [SerializeField] private Snake snake;
 
@@ -20,27 +20,28 @@ public class AppleSpawner : MonoBehaviour
     {
         snake.OnMove += TryEatApple;
 
+        RectTransform newApple;
         for (int i = 0; i < apples; i++)
         {
-            Spawn();
+            newApple = Instantiate(applePrefab, gameObject.transform);
+
+            activeApples.Add(newApple);
+
+            Reposition(newApple);
         }
     }
 
-    void Spawn()
+    void Reposition(RectTransform apple)
     {
-        RectTransform newApple = Instantiate(apple, gameObject.transform);
-
         Vector2 newPosition;
 
         do
         {
             newPosition = RandomPosition();
         }
-        while (FindApple(newPosition) != null || snake.CheckForBodyPiece(newPosition));
+        while (FindApple(newPosition) || snake.CheckForBodyPiece(newPosition));
 
-        newApple.anchoredPosition = newPosition;
-
-        activeApples.Add(newApple);
+        apple.anchoredPosition = newPosition;
     }
 
     Vector2 RandomPosition()
@@ -52,18 +53,14 @@ public class AppleSpawner : MonoBehaviour
     {
         RectTransform apple = FindApple(position);
 
-        if (apple == null)
+        if (!apple)
         {
             return;
         }
 
-        Destroy(apple.gameObject);
-
-        activeApples.Remove(apple);
-
         snake.IncreaseLength();
 
-        Spawn();
+        Reposition(apple);
 
         OnEatApple?.Invoke();
     }
