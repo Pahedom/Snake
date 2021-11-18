@@ -1,32 +1,50 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Snake : MonoBehaviour
 {
-    [SerializeField] private Field field;
+    [SerializeField] private RectTransform head;
 
-    [SerializeField] private RectTransform originalBody;
-
+    [Min(0)]
     [SerializeField] private float speed;
 
     private float timeBetweenMoves;
 
-    private float timer;
+    private int length = 1;
 
-    private List<RectTransform> bodyPieces = new List<RectTransform>();
+    private Vector2 direction;
+
+    [HideInInspector] public List<RectTransform> bodyPieces = new List<RectTransform>();
 
     private Vector2 lastPosition;
 
-    private Vector2 direction = Vector2.up;
+    private float timer;
+
+    private Field field;
+
+    public UnityAction<Vector2> OnMove;
+
+    public UnityAction OnDie;
+
+    private void OnValidate()
+    {
+        head = GetComponentsInChildren<RectTransform>()[1];
+
+        timeBetweenMoves = 1f / speed;
+
+        field = FindObjectOfType<Field>();
+
+        lastPosition = head.anchoredPosition + Vector2.down * field.tileSize;
+    }
 
     void Start()
     {
-        timeBetweenMoves = 1f / speed;
+        bodyPieces.Add(head);
 
-        lastPosition = originalBody.anchoredPosition + Vector2.down * field.tileSize;
+        length = 1;
 
-        bodyPieces.Add(originalBody.GetComponent<RectTransform>());
+        direction = Vector2.up;
     }
 
     void Update()
@@ -37,8 +55,6 @@ public class Snake : MonoBehaviour
 
         if (timer >= timeBetweenMoves)
         {
-            IncreaseLength();
-
             Move();
 
             timer -= timeBetweenMoves;
@@ -47,16 +63,25 @@ public class Snake : MonoBehaviour
 
     void Move()
     {
-        lastPosition = bodyPieces[bodyPieces.Count - 1].anchoredPosition;
+        lastPosition = bodyPieces[length - 1].anchoredPosition;
 
-        for (int i = bodyPieces.Count - 1; i > 0; i--)
+        for (int i = length - 1; i > 0; i--)
         {
             bodyPieces[i].anchoredPosition = bodyPieces[i - 1].anchoredPosition;
         }
 
-        Vector2 newPosition = originalBody.anchoredPosition + direction * field.tileSize;
+        Vector2 newPosition = head.anchoredPosition + direction * field.tileSize;
 
-        originalBody.anchoredPosition = newPosition;
+        if (CheckForBodyPiece(newPosition))
+        {
+            OnDie?.Invoke();
+
+            return;
+        }
+
+        head.anchoredPosition = newPosition;
+
+        OnMove?.Invoke(newPosition);
     }
 
     void GetDirection()
@@ -81,12 +106,27 @@ public class Snake : MonoBehaviour
 
     public void IncreaseLength()
     {
-        RectTransform newBodyPiece = Instantiate(originalBody, gameObject.transform);
+        RectTransform newBodyPiece = Instantiate(head, gameObject.transform);
 
         bodyPieces.Add(newBodyPiece);
 
-        RectTransform lastBodyPiece = bodyPieces[bodyPieces.Count - 1];
+        length++;
 
         newBodyPiece.anchoredPosition = lastPosition;
+
+        newBodyPiece.name = "Snake Body " + (length - 1);
+    }
+
+    public bool CheckForBodyPiece(Vector2 position)
+    {
+        foreach (RectTransform bodyPiece in bodyPieces)
+        {
+            if (position == bodyPiece.anchoredPosition)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
