@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using System;
 
 public class Snake : MonoBehaviour
 {
@@ -29,13 +30,15 @@ public class Snake : MonoBehaviour
 
     public UnityAction OnDie;
 
-    private void OnValidate()
+    private void Awake()
     {
-        timeBetweenMoves = 1f / speed;
+        SetSpeed(PlayerPrefs.GetFloat("speed", 8f).ToString());
     }
 
     void Start()
     {
+        timeBetweenMoves = 1f / speed;
+
         bodyPieces.Add(head);
 
         length = 1;
@@ -157,5 +160,19 @@ public class Snake : MonoBehaviour
         }
 
         return false;
+    }
+
+    public void SetSpeed(string newValue)
+    {
+        try
+        {
+            speed = float.Parse(newValue);
+        }
+        catch (FormatException)
+        {
+            return;
+        }
+
+        PlayerPrefs.SetFloat("speed", speed);
     }
 }

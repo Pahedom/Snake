@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using System;
 
 public class AppleSpawner : MonoBehaviour
 {
@@ -12,9 +13,18 @@ public class AppleSpawner : MonoBehaviour
 
     [SerializeField] private int apples;
 
+    [SerializeField] private int scorePerApple;
+
     private List<RectTransform> activeApples = new List<RectTransform>();
 
-    public UnityAction OnEatApple;
+    public UnityAction<int> OnEatApple;
+
+    private void Awake()
+    {
+        SetApples(PlayerPrefs.GetInt("apples", 5).ToString());
+
+        SetScorePerApple(PlayerPrefs.GetInt("scorePerApple", 1).ToString());
+    }
 
     void Start()
     {
@@ -46,7 +56,7 @@ public class AppleSpawner : MonoBehaviour
 
     Vector2 RandomPosition()
     {
-        return new Vector2(Random.Range(0, field.size.x), Random.Range(0, field.size.y)) * field.tileSize;
+        return new Vector2(UnityEngine.Random.Range(0, field.size.x), UnityEngine.Random.Range(0, field.size.y)) * field.tileSize;
     }
 
     void TryEatApple(Vector2 position)
@@ -62,7 +72,7 @@ public class AppleSpawner : MonoBehaviour
 
         Reposition(apple);
 
-        OnEatApple?.Invoke();
+        OnEatApple?.Invoke(scorePerApple);
     }
 
     RectTransform FindApple(Vector2 position)
@@ -76,5 +86,33 @@ public class AppleSpawner : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void SetApples(string newValue)
+    {
+        try
+        {
+            apples = Int32.Parse(newValue);
+        }
+        catch (FormatException)
+        {
+            return;
+        }
+
+        PlayerPrefs.SetInt("apples", apples);
+    }
+
+    public void SetScorePerApple(string newValue)
+    {
+        try
+        {
+            scorePerApple = Int32.Parse(newValue);
+        }
+        catch (FormatException)
+        {
+            return;
+        }
+
+        PlayerPrefs.SetInt("scorePerApple", scorePerApple);
     }
 }
